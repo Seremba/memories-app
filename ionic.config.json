@@ -1,0 +1,7 @@
+{
+  "name": "poc_project",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
