@@ -6,21 +6,38 @@
                <ion-input type="text" required v-model="enteredTitle"/>
            </ion-item>
            <ion-item>
-               <ion-label position="floating">Image URL</ion-label>
-                <ion-input type="url" required v-model="enteredImageUrl"/>
+               <ion-thumbnail slot="start">
+                   <img :src="takenImageUrl"/>
+               </ion-thumbnail>
+               <ion-button type="button" fill="clear" @click="takePhoto">
+                   <ion-icon slot="start" :icon="camera"></ion-icon>
+                   Take A Photo
+               </ion-button>
            </ion-item>
            <ion-item>
                <ion-label position="floating">Description</ion-label>
               <ion-textarea rows="5" v-model="enteredDescription"></ion-textarea>
            </ion-item>
-                <ion-button expand="full" type="submit">Save</ion-button>
+                <ion-button expand="block" type="submit">Save</ion-button>
        </ion-list>
       </form>
 </template>
 
 <script>
-import { IonList, IonButton, IonItem, IonLabel, IonInput, IonTextarea } from '@ionic/vue'
+import { 
+    IonList, 
+    IonButton, 
+    IonItem, 
+    IonLabel, 
+    IonInput, 
+    IonTextarea, 
+    IonThumbnail,
+    IonIcon
+     } from '@ionic/vue'
+     import { camera } from 'ionicons/icons'
+     import { plugins, CameraResultType, CameraSource } from '@capacitor/core'
 
+const { Camera } = plugins 
 export default {
     emits: ['save-memory'],
     components: { 
@@ -29,20 +46,32 @@ export default {
       IonLabel,
       IonInput,
       IonTextarea,
-      IonButton
+      IonButton,
+      IonThumbnail,
+      IonIcon
 },
 data(){
    return {
        enteredTitle: '',
-       enteredImageUrl: '',
-       enteredDescription: ''
+       enteredDescription: '',
+       takenImageUrl: null,
+       camera
    }
 },
 methods: {
+   async takePhoto(){
+      const photo = await Camera.getPhoto({
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Camera,
+          quality: 60 
+      });
+
+      this.takenImageUrl = photo.webPath;
+    },
     submitForm() {
         const memoryData = {
             title: this.enteredTitle,
-            imageUrl: this.enteredImageUrl,
+            imageUrl: this.takenImageUrl,
             description: this.enteredDescription
 
         }
